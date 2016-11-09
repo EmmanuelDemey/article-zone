@@ -243,7 +243,7 @@ Error: HTMLButtonElement.addEventListener:click
 ## Utilisation dans Angular2
 
 Maintenant que nous avons vu en détail le fonctionnement de la librairie, vous
-vous posez peut-être la question de son utilité dans Angular2, et voulez savoir dans quel cas le
+vous posez peut-être la question de son utilité dans Angular2, et voulez savoir dans quels cas le
 framework a besoin des zones pour fonctionner. Pour citer que deux usages :
 
 * la détection des fins de traitements asynchrones pour faire la mise à jour de nos vues (il n'est
