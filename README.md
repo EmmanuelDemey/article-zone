@@ -3,7 +3,7 @@
 Maintenant qu'Angular2 est officiellement disponible, il est tant pour nous tous de comprendre les méandres de cette
 toute nouvelle version du framework. Si vous avez eu un jour la curiosité de faire un petit tutorial *Getting Started*
 pour débuter un nouveau projet Angular2, vous avez sûrement du importer une librairie *zone.js*, afin de faire fonctionner
-l'application correctement. Vous l'avez importer, mais vous ne savez peut-être pas à quoi elle sert. Nous allons essayer 
+l'application correctement. Vous l'avez importée, mais vous ne savez peut-être pas à quoi elle sert. Nous allons essayer 
 d'y répondre dans cet article. 
 
 Avant de vous présenter la librairie en elle-même, nous souhaitons tout d'abord vous présenter deux problèmes qui 
@@ -30,30 +30,30 @@ goBackToZenikaLille();
 endTimer()
 ```
 
-Ce script est composés de traitements synchrones et de traitements asynchrones (les deux appels
+Ce script est composé de traitements synchrones et de traitements asynchrones (les deux appels
 à la méthode `setTimeout`). Pour les débutants en JavaScript, on pourrait imaginer que du fait du deuxième
 paramètre de mes méthodes `setTimeout` qui est égal à 0, la méthode `veryLongTask` est appelée deux fois, 
-l'une après l'autre, de manière synchrone. Vous vous trompez...
+l'une après l'autre, de manière synchrone. Ce serait une erreur...
 
-Si nous nous mettons à la place d'une VM JavaScript, nous avons en fait, au minimum, deux stack d'exécutions. La principale correspond
-à celle que nous avons l'habitude de manipuler, celle qui va exécuter nos traitements synchrones. Dès que le VM détecte
+Si nous nous mettons à la place d'une VM JavaScript, nous avons en fait, au minimum, deux stacks d'exécution. La principale correspond
+à celle que nous avons l'habitude de manipuler, celle qui va exécuter nos traitements synchrones. Dès que la VM détecte
 un appel à une traitement asynchrone (`setTimeout`, `setInterval`, `addEventListener`, ...), elle ne l'exécute pas de suite, mais place
-l'appel à cette méthode dans la seconde stack. Et cette dernière ne sera dépilée seulement lorsque la stack principale
-est vide. 
+l'appel à cette méthode dans la seconde stack. Et cette dernière ne sera dépilée que lorsque la stack principale
+sera vide. 
 
-Dans notre exemple, après avoir exécuter la méthode `endTimer`, la stack principale est maintenant vide, et la stack secondaire contenant
+Dans notre exemple, après avoir exécuté la méthode `endTimer`, la stack principale est vide, et la stack secondaire contenant
 les deux appels à la méthode `setTimeout` vont enfin pouvoir être exécutés. Et vous comprenez maintenant le problème. Nous affichons
 le résultat de notre timer avant même la fin de l'ensemble de notre code applicatif. Le résultat sera alors erroné. 
 
 
 ## Gestion des stacktraces
 
-Le deuxième exemple que nous souhaitons vous présenter, concerne la gestion des stacktraces d'erreur, 
+Le deuxième exemple que nous souhaitons vous présenter concerne la gestion des stacktraces d'erreur, 
 lors de l'exécution d'un ensemble de traitements asynchrones. 
 
 Dans l'exemple ci-dessous, lorsque l'erreur est émise dans la méthode `throwError`, dans notre console, nous 
 n'avons aucune information de l'origine réelle de cette erreur. Nous ne savons qu'elle a été émise parce que 
-nous avons cliquer sur le bouton *Cause Error*, et également parce que nous avons cliquer au préalable sur le 
+nous avons cliqué sur le bouton *Cause Error*, et également parce que nous avons cliqué au préalable sur le 
 bouton *Bind Error* 
 
 ```html
@@ -81,7 +81,7 @@ bouton *Bind Error*
 </html>
 ```
 
-Ce code est tiré de la bibliothèque d'exemples fournis dans le repository Github de la librairie. 
+Ce code est tiré de la bibliothèque d'exemples fournie dans le repository Github de la librairie. 
 
 ## La solution: Zone.JS
 
@@ -94,13 +94,13 @@ faire deux chose :
 
 Comment est-il possible d'intéragir avec le cycle de vie de ces tâches, tout simplement parce que la librairie
 surcharge l'ensemble des traitements asynchrones du langage, dans le but de pouvoir exécuter les *hooks* que 
-nous aurions configurer. 
+nous aurions configurés. 
 
 Afin de vous présenter la syntaxe pour manipuler cette librairie, nous allons reprendre le deuxième problème 
 présenté précédemment.  Une fois la librairie zone.js importée, 
 vous allez avoir accès un objet *Zone.current* qui est le contexte d'exécution par défaut. A partir de ce contexte, 
 nous allons pouvoir en créer de nouveau grâce à la méthode *fork*. Cette dernière retourne le même type d'objet, 
-une zone, sur lequel nous pouvons appeler de nouveaux la même méthode *fork*, afin d'avoir une hiérarchie dans nos contextes
+une zone, sur lequel nous pouvons appeler à nouveau la même méthode *fork*, afin d'avoir une hiérarchie dans nos contextes
 d'exécution, et de pouvoir partager du code commun. Sur l'objet retourné par la méthode *fork*, nous pouvons
 à présent appeler notre code métier grâce à la méthode *run*.
 
@@ -162,9 +162,9 @@ Zone.current.fork({
 }).run(main);
 ```
 
-Pour chaque traitements asynchrones, nous allons sauvegarder dans une variable disponible depuis notre contexte
+Pour chaque traitement asynchrone, nous allons sauvegarder dans une variable disponible depuis notre contexte
 d'exécution (`targetZone`), une référence, sous la forme d'une Erreur. Cette variable correspondera à un tableau, dans 
-lequel le dernièr traitement asynchrone enregistré sera en haut de la pile (fonctionnement normal d'une stacktrace). Dans la solution
+lequel le dernier traitement asynchrone enregistré sera en haut de la pile (fonctionnement normal d'une stacktrace). Dans la solution
 ci-dessous, nous utilisons un identifiant généré par la librairie, `task.source`, mais nous pourrions être plus spécifique et récupérer 
 le nom de la méthode, sa signature, ou pourquoi pas le numéro de ligne, ...
 
@@ -244,21 +244,21 @@ Error: HTMLButtonElement.addEventListener:click
 ## Utilisation dans Angular2
 
 Maintenant que nous avons vu en détail le fonctionnement de la librairie, vous
-vous posez peut-être la question de son utilité dans Angular2. Dans quel cas, le
-framework a besoin des zones pour fonctionner. Pour citer que deux usages : 
+vous posez peut-être la question de son utilité dans Angular2. Dans quel cas le
+framework a besoin des zones pour fonctionner. Pour ne citer que deux usages : 
 
 * la détection des fins de traitements aynchrones pour faire la mise à jour de nos vues (il n'est
 plus nécessaire d'utiliser des $scope.$apply ou $scope.$digest comme dans AngularJS)
 
-* Avoir des stacktraces complètes (similaire à celles que nous avons créer précédemment), lors d'une 
+* Avoir des stacktraces complètes (similaire à celles que nous avons créées précédemment), lors d'une 
 erreur dans votre application (erreur dans votre code TypeScript ou dans vos templates). 
 
 
 Si Angular2 s'arrêtait là, nous pourrions avoir un léger problème de performance. Si nous avons une
-synchronisation de vos vues après chaque traitements asynchrones, la performance pourrait être dégradée
-surtout si nous utilisons des animations, des évènements de la souris, ou encore l'envoie
+synchronisation de vos vues après chaque traitement asynchrone, la performance pourrait être dégradée
+surtout si nous utilisons des animations, des évènements de la souris, ou encore l'envoi
 de requêtes HTTP qui ne nécessitent pas de mise à jour (des requêtes vers Google Analytics par exemple). 
-Afin de remédier à ce problème, Angular2 met à disposition un service, *NgZone*, qui est juste une wrapper sur 
+Afin de remédier à ce problème, Angular2 met à disposition un service, *NgZone*, qui est juste un wrapper sur 
 l'objet Zone, avec notamment une méthode *runOutsideAngular* permettant de désactiver le fonctionnement par 
 défaut. 
 
@@ -276,7 +276,7 @@ export class AnalyticsService {
 }
 ```
 
-Cette fonctionnalité des Zones a été proposé par l'équipe Angular au commité en charge de la spécification
+Cette fonctionnalité des Zones a été proposé par l'équipe Angular au comité en charge de la spécification
 du langage JavaScript. C'est encore le tout début (la proposition est encore à l'état *stage 0*), mais nous 
 pourrions peut-être avoir un jour cette fonctionnalité nativement dans le langage. Ce qui indique bien 
 que les standards évoluent notamment grâce aux multiples projets/librairies/frameworks que nous aimons utiliser. 
