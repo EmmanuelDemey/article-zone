@@ -3,7 +3,7 @@
 Maintenant qu'Angular2 est officiellement disponible, il est tant pour nous tous de comprendre les méandres de cette
 toute nouvelle version du framework. Si vous avez eu un jour la curiosité de faire un petit tutorial *Getting Started*
 pour débuter un nouveau projet Angular2, vous avez sûrement du importer une librairie *zone.js*, afin de faire fonctionner
-l'application correctement. Vous l'avez importé, mais vous ne savez peut-être pas à quoi elle sert. Nous allons essayer 
+l'application correctement. Vous l'avez importée, mais vous ne savez peut-être pas à quoi elle sert. Nous allons essayer 
 d'y répondre dans cet article. 
 
 Avant de vous présenter la librairie en elle-même, nous souhaitons tout d'abord vous présenter deux problèmes qui 
