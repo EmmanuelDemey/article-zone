@@ -1,8 +1,8 @@
 # Les Zones
 
-Maintenant qu'`Angular2` est officiellement disponible, il est tant pour nous tous de comprendre les méandres de cette
+Maintenant qu'`Angular2` est officiellement disponible, il est temps pour nous tous de comprendre les méandres de cette
 toute nouvelle version du framework. Si vous avez eu un jour la curiosité de faire un petit tutorial *Getting Started*
-pour débuter un nouveau projet `Angular`, vous avez sûrement du importer une librairie `zone.js`, afin de faire fonctionner
+pour débuter un nouveau projet `Angular`, vous avez sûrement dû importer une librairie `zone.js`, afin de faire fonctionner
 l'application correctement. Vous l'avez importée, mais vous ne savez peut-être pas à quoi elle sert. Nous allons essayer 
 d'y répondre dans cet article. 
 
@@ -37,12 +37,12 @@ l'une après l'autre, de manière synchrone. Ce serait une erreur...
 
 Si nous nous mettons à la place d'une VM `JavaScript`, nous avons en fait, au minimum, deux stacks d'exécution. La principale correspond
 à celle que nous avons l'habitude de manipuler, celle qui va exécuter nos traitements synchrones. Dès que la VM détecte
-un appel à une traitement asynchrone (`setTimeout`, `setInterval`, `addEventListener`, ...), elle ne l'exécute pas de suite, mais place
+un appel à un traitement asynchrone (`setTimeout`, `setInterval`, `addEventListener`, ...), elle ne l'exécute pas de suite, mais place
 l'appel à cette méthode dans la seconde stack. Et cette dernière ne sera dépilée que lorsque la stack principale
 sera vide. 
 
 Dans notre exemple, après avoir exécuté la méthode `endTimer`, la stack principale est vide, et la stack secondaire contenant
-les deux appels à la méthode `setTimeout` vont enfin pouvoir être exécutés. Et vous comprenez maintenant le problème. Nous affichons
+les deux appels à la méthode `setTimeout` vont enfin pouvoir être exécutés. Et vous comprenez maintenant le problème : nous affichons
 le résultat de notre timer avant même la fin de l'ensemble de notre code applicatif. Le résultat sera alors erroné. 
 
 
@@ -52,7 +52,7 @@ Le deuxième exemple que nous souhaitons vous présenter concerne la gestion des
 lors de l'exécution d'un ensemble de traitements asynchrones. 
 
 Dans l'exemple ci-dessous, lorsque l'erreur est émise dans la méthode `throwError`, dans notre console, nous 
-n'avons aucune information de l'origine réelle de cette erreur. Nous ne savons qu'elle a été émise parce que 
+n'avons aucune information sur l'origine réelle de cette erreur. Nous ne savons qu'elle a été émise parce que 
 nous avons cliqué sur le bouton *Cause Error*, et également parce que nous avons cliqué au préalable sur le 
 bouton *Bind Error* 
 
@@ -86,21 +86,21 @@ Ce code est tiré de la bibliothèque d'exemples fournie dans le repository Gith
 ## La solution: Zone.JS
 
 Cette librairie va nous permettre de créer des contextes d'exécution, dans lesquels nous allons pouvoir 
-faire exécuter des traitements synchrones et asynchrones. Ces contextes d'exécution vons nous permettre de
-faire deux chose : 
+faire exécuter des traitements synchrones et asynchrones. Ces contextes d'exécution vont nous permettre de
+faire deux choses : 
 
-* Partager de la donnée à travers les différents traitements asynchrones exécutés dans le même contexte. 
-* Intéragir avec le cycle de vie des tâches asynchrones, à l'aide de *hooks* 
+* Partager des données à travers les différents traitements asynchrones exécutés dans le même contexte. 
+* Interagir avec le cycle de vie des tâches asynchrones, à l'aide de *hooks* 
 
-Comment est-il possible d'intéragir avec le cycle de vie de ces tâches ? Tout simplement parce que la librairie
+Comment est-il possible d'interagir avec le cycle de vie de ces tâches ? Tout simplement parce que la librairie
 surcharge l'ensemble des traitements asynchrones du langage dans le but de pouvoir exécuter les *hooks* que 
 nous aurions configurés. 
 
 Afin de vous présenter la syntaxe pour manipuler cette librairie, nous allons reprendre le deuxième problème 
 présenté précédemment. Une fois la librairie `zone.js` importée, 
-vous allez avoir accès un objet `Zone.current` qui est le contexte d'exécution par défaut. A partir de ce contexte, 
+vous allez avoir accès à un objet `Zone.current` qui est le contexte d'exécution par défaut. A partir de ce contexte, 
 nous allons pouvoir en créer de nouveau grâce à la méthode `fork`. Cette dernière retourne le même type d'objet, 
-une zone, sur lequel nous pouvons appeler à nouveau la même méthode `fork`, afin d'avoir une hiérarchie dans nos contextes
+une zone. Nous pouvons appeler à nouveau la même méthode `fork` sur cette zone, afin d'avoir une hiérarchie dans nos contextes
 d'exécution, et de pouvoir partager du code commun. Sur l'objet retourné par la méthode `fork`, nous pouvons
 à présent appeler notre code métier grâce à la méthode `run`.
 
@@ -162,9 +162,9 @@ Zone.current.fork({
 ```
 
 Pour chaque traitement asynchrone, nous allons sauvegarder dans une variable disponible depuis notre contexte
-d'exécution (`targetZone`) une référence sous la forme d'une `Erreur`. Cette variable correspondera à un tableau, dans 
+d'exécution (`targetZone`) une référence sous la forme d'une `Erreur`. Cette variable correspondra à un tableau, dans 
 lequel le dernier traitement asynchrone enregistré sera en haut de la pile (fonctionnement normal d'une *stacktrace*). Dans la solution
-ci-dessous, nous utilisons un identifiant généré par la librairie `task.source`, mais nous pourrions être plus spécifique et récupérer 
+ci-dessous, nous utilisons un identifiant généré par la librairie `task.source`, mais nous pourrions être plus spécifiques et récupérer 
 le nom de la méthode, sa signature, ou pourquoi pas le numéro de ligne, etc.
 
 ```JavaScript
@@ -181,7 +181,7 @@ Zone.current.fork({
 ```
 
 La dernière chose à implémenter correspond à l'affichage de cette variable `targetZone.traces`, lorsqu'une 
-vraie erreur est émise. Cette fonctionnalité sera réalisée dans la méthode `onHandleError`
+vraie erreur est émise. Cette fonctionnalité sera réalisée dans la méthode `onHandleError`.
 Nous allons tout d'abord ajouter à notre variable `targetZone.traces` l'erreur qui vient d'être émise, et nous allons 
 ensuite surcharger le *getter* de la propriété `stack` du paramètre `error` de notre méthode. Ce *getter* retournera
 nos différentes erreurs, séparées par des sauts de lignes. 
@@ -243,17 +243,17 @@ Error: HTMLButtonElement.addEventListener:click
 ## Utilisation dans Angular2
 
 Maintenant que nous avons vu en détail le fonctionnement de la librairie, vous
-vous posez peut-être la question de son utilité dans `Angular2`. Dans quel cas le
+vous posez peut-être la question de son utilité dans `Angular2`, et voulez savoir dans quels cas le
 framework a besoin des zones pour fonctionner. Pour ne citer que deux usages : 
 
 * la détection des fins de traitements aynchrones pour faire la mise à jour de nos vues (il n'est
 plus nécessaire d'utiliser des `$scope.$apply` ou `$scope.$digest` comme dans `AngularJS`)
 
-* Avoir des *stacktraces* complètes (similaire à celles que nous avons créées précédemment), lors d'une 
+* Avoir des *stacktraces* complètes (similaires à celles que nous avons créées précédemment), lors d'une 
 erreur dans votre application (erreur dans votre code `TypeScript` ou dans vos *templates*). 
 
 
-Si `Angular2` s'arrêtait là, nous pourrions avoir un léger problème de performance. Si nous avons une
+Si `Angular2` s'arrêtait là, nous pourrions avoir un léger problème de performance. Si nous avions une
 synchronisation de vos vues après chaque traitement asynchrone, la performance pourrait être dégradée
 surtout si nous utilisons des animations, des évènements de la souris, ou encore l'envoi
 de requêtes HTTP qui ne nécessitent pas de mise à jour (des requêtes vers Google Analytics par exemple). 
@@ -276,6 +276,6 @@ export class AnalyticsService {
 ```
 
 Cette fonctionnalité des `Zones` a été proposée par l'équipe `Angular` au comité en charge de la spécification
-du langage `JavaScript`. C'est encore le tout début (la proposition est encore à l'état *stage 0*), mais nous 
+du langage `JavaScript`. C'est encore le tout début (la proposition est à l'état *stage 0*), mais nous 
 pourrions peut-être avoir un jour cette fonctionnalité nativement dans le langage. Ce qui indique bien 
-que les standards évoluent notamment grâce aux multiples projets/librairies/frameworks que nous aimons utiliser. 
+que les standards évoluent, notamment grâce aux multiples projets/librairies/frameworks que nous aimons utiliser. 
